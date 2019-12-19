@@ -9,6 +9,7 @@ public class Canvas {
 		this.arr = arr;
 	}
 	
+	// Draw the board
 	public void draw() {
 		CharSequence separator = "\n";
 		StringJoiner stringJoiner = new StringJoiner(separator);
