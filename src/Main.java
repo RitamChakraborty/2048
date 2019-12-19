@@ -11,7 +11,7 @@ public class Main {
 		System.out.println("Enter grid number: ");
 		grid = scanner.nextInt();
 		
-		Canvas canvas = new Canvas(grid);
-		canvas.draw();
+		Game game = new Game(grid);
+		game.play();
 	}
 }

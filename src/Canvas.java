@@ -2,9 +2,11 @@ import java.util.StringJoiner;
 
 public class Canvas {
 	private int grid;
+	private int[][] arr;
 	
-	public Canvas(int grid) {
+	public Canvas(int grid, int[][] arr) {
 		this.grid = grid;
+		this.arr = arr;
 	}
 	
 	public void draw() {
@@ -24,8 +26,10 @@ public class Canvas {
 			stringJoiner1 = new StringJoiner("|", "|", "|");
 			
 			for (int j = 0; j < grid; ++j) {
-				CharSequence charSequence = "      ";
-				stringJoiner1.add(charSequence);
+				String num = arr[i][j] == 0
+						             ? "      "
+						             : " " + String.format("%4d", arr[i][j]) + " ";
+				stringJoiner1.add(num);
 			}
 			
 			stringJoiner.add(stringJoiner1.toString());
