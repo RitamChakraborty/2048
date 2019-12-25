@@ -103,7 +103,41 @@ public class Game {
 	}
 	
 	private void moveUp() {
-	
+		for (int j = 0; j < grid; ++j) {
+			for (int i = 0; i < grid; ++i) {
+				boolean found = false;
+				
+				for (int k = i + 1; k < grid; ++k) {
+					if (arr[i][j] == arr[k][j]) {
+						found = true;
+						arr[i][j] += arr[k][j];
+						arr[k][j] = 0;
+						
+						int tempI = i;
+						
+						while (tempI > 0 && arr[tempI - 1][j] == 0) {
+							arr[tempI - 1][j] = arr[tempI][j];
+							arr[tempI][j] = 0;
+							--tempI;
+						}
+						
+						break;
+					} else if (arr[k][j] != 0) {
+						break;
+					}
+				}
+				
+				if (!found) {
+					int tempI = i;
+					
+					while (tempI > 0 && arr[tempI - 1][j] == 0) {
+						arr[tempI - 1][j] = arr[tempI][j];
+						arr[tempI][j] = 0;
+						--tempI;
+					}
+				}
+			}
+		}
 	}
 	
 	private void moveDown() {
