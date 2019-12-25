@@ -60,6 +60,8 @@ public class Game {
 			for (int j = 0; j < grid; ++j) {
 				boolean found = false;
 				
+				// Check if there are same numbers in the same row
+				// If so, then add them and move the very left
 				for (int k = j + 1; k < grid; ++k) {
 					if (arr[i][j] == arr[i][k]) {
 						found = true;
@@ -68,6 +70,7 @@ public class Game {
 						
 						int tempJ = j;
 						
+						// Logic of moving the number to the very left
 						while (tempJ > 0 && arr[i][tempJ - 1] == 0) {
 							arr[i][tempJ - 1] = arr[i][tempJ];
 							arr[i][tempJ] = 0;
@@ -80,6 +83,8 @@ public class Game {
 					}
 				}
 				
+				// If no consecutive same number found,
+				// then just move the number to the left
 				if (!found) {
 					int tempJ = j;
 					
