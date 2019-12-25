@@ -1,10 +1,15 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Game {
+	private int grid;
 	private int[][] arr;
 	private Canvas canvas;
 	
+	// Position class keeps the position of row and column
 	private static class Position {
 		int i;
 		int j;
@@ -16,11 +21,12 @@ public class Game {
 	}
 	
 	public Game(int grid) {
+		this.grid = grid;
 		arr = new int[grid][grid];
 		canvas = new Canvas(grid, arr);
 	}
 	
-	public void play() throws Exception {
+	public void play() {
 		int max = 0;
 		
 		while (max != 2048) {
@@ -37,11 +43,99 @@ public class Game {
 						          : 4;
 				arr[randomPosition.i][randomPosition.j] = num;
 				canvas.draw();
-				Thread.sleep(1000);
+				max = takeUserAction();
+				
+				if (max == 2048) {
+					System.out.println("You've won!");
+				}
 			} else {
+				System.out.println("Game Over!");
 				break;
 			}
 		}
+	}
+	
+	private void moveLeft() {
+		for (int i = 0; i < grid; ++i) {
+			for (int j = 0; j < grid; ++j) {
+				boolean found = false;
+				
+				for (int k = j + 1; k < grid; ++k) {
+					if (arr[i][j] == arr[i][k]) {
+						found = true;
+						arr[i][j] += arr[i][k];
+						arr[i][k] = 0;
+						
+						int tempJ = j;
+						
+						while (tempJ > 0 && arr[i][tempJ - 1] == 0) {
+							arr[i][tempJ - 1] = arr[i][tempJ];
+							arr[i][tempJ] = 0;
+							--tempJ;
+						}
+						
+						break;
+					} else if (arr[i][k] != 0) {
+						break;
+					}
+				}
+				
+				if (!found) {
+					int tempJ = j;
+					
+					while (tempJ > 0 && arr[i][tempJ - 1] == 0) {
+						arr[i][tempJ - 1] = arr[i][tempJ];
+						arr[i][tempJ] = 0;
+						--tempJ;
+					}
+				}
+			}
+		}
+	}
+	
+	private void moveRight() {
+	
+	}
+	
+	private void moveUp() {
+	
+	}
+	
+	private void moveDown() {
+	
+	}
+	
+	private int takeUserAction() {
+		Scanner scanner = new Scanner(new BufferedReader(new InputStreamReader(System.in)));
+		System.out.println("Enter move: ");
+		char move = scanner.next().charAt(0);
+		
+		switch (move) {
+			case 'h':
+				moveLeft();
+				System.out.println();
+				break;
+			case 'j':
+				moveUp();
+				break;
+			case 'k':
+				moveDown();
+				break;
+			case 'l':
+				moveRight();
+				break;
+			default:
+				System.out.println("Wrong input");
+		}
+		
+		int max = 0;
+		for (int[] ints : arr) {
+			for (int anInt : ints) {
+				max = Integer.max(max, anInt);
+			}
+		}
+		
+		return max;
 	}
 	
 	// Get the positions where you can place new number
