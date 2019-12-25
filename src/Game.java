@@ -99,7 +99,39 @@ public class Game {
 	}
 	
 	private void moveRight() {
-	
+		for (int i = 0; i < grid; ++i) {
+			for (int j = grid - 1; j >= 0; --j) {
+				boolean found = false;
+				
+				for (int k = j - 1; k >= 0; --k) {
+					if (arr[i][j] == arr[i][k]) {
+						found = true;
+						arr[i][j] += arr[i][k];
+						arr[i][k] = 0;
+						
+						int tempJ = j;
+						
+						while (tempJ < grid - 1 && arr[i][tempJ + 1] == 0) {
+							arr[i][tempJ + 1] = arr[i][tempJ];
+							arr[i][tempJ] = 0;
+							++tempJ;
+						}
+					} else if (arr[i][k] != 0) {
+						break;
+					}
+				}
+				
+				if (!found) {
+					int tempJ = j;
+					
+					while (tempJ < grid - 1 && arr[i][tempJ + 1] == 0) {
+						arr[i][tempJ + 1] = arr[i][tempJ];
+						arr[i][tempJ] = 0;
+						++tempJ;
+					}
+				}
+			}
+		}
 	}
 	
 	private void moveUp() {
