@@ -33,26 +33,47 @@ public class Game {
 			List<Position> emptyPositions = getEmptyPositions();
 			int length = emptyPositions.size();
 			
-			if (length != 0) {
-				// Get a random position where you can put the new number
-				int random = (int) Math.round(Math.random() * (length - 1));
-				Position randomPosition = emptyPositions.get(random);
-				// New Number should be 2 or 4
-				int num = (int) Math.round(Math.random() * 1) == 0
-						          ? 2
-						          : 4;
-				arr[randomPosition.i][randomPosition.j] = num;
-				canvas.draw();
-				max = takeUserAction();
-				
-				if (max == 2048) {
-					System.out.println("You've won!");
-				}
-			} else {
-				System.out.println("Game Over!");
+			// Get a random position where you can put the new number
+			int random = (int) Math.round(Math.random() * (length - 1));
+			Position randomPosition = emptyPositions.get(random);
+			// New Number should be 2 or 4
+			int num = (int) Math.round(Math.random() * 1) == 0
+					          ? 2
+					          : 4;
+			arr[randomPosition.i][randomPosition.j] = num;
+			canvas.draw();
+			
+			if (!anyMoveLeft()) {
+				System.out.println("GAME OVER!");
 				break;
 			}
+			
+			max = takeUserAction();
+			
+			if (max == 2048) {
+				System.out.println("You've won!");
+			}
 		}
+	}
+	
+	private boolean anyMoveLeft() {
+		for (int i = 0; i < grid; ++i) {
+			for (int j = 0; j < grid; ++j) {
+				if (arr[i][j] == 0) {
+					return true;
+				} else if (j < grid - 1) {
+					if (arr[i][j] == arr[i][j + 1]) {
+						return true;
+					}
+				} else if (i < grid - 1) {
+					if (arr[i][j] == arr[i + 1][j]) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	private boolean moveLeft() {
@@ -179,7 +200,7 @@ public class Game {
 				if (!found) {
 					int tempI = i;
 					
-					while (tempI > 0 && arr[i][tempI] != 0 && arr[tempI - 1][j] == 0) {
+					while (tempI > 0 && arr[tempI][j] != 0 && arr[tempI - 1][j] == 0) {
 						moved = true;
 						arr[tempI - 1][j] = arr[tempI][j];
 						arr[tempI][j] = 0;
@@ -223,7 +244,7 @@ public class Game {
 				if (!found) {
 					int tempI = i;
 					
-					while (tempI < grid - 1 && arr[i][tempI] != 0 && arr[tempI + 1][j] == 0) {
+					while (tempI < grid - 1 && arr[tempI][j] != 0 && arr[tempI + 1][j] == 0) {
 						moved = true;
 						arr[tempI + 1][j] = arr[tempI][j];
 						arr[tempI][j] = 0;
