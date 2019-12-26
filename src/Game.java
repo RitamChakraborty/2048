@@ -55,7 +55,9 @@ public class Game {
 		}
 	}
 	
-	private void moveLeft() {
+	private boolean moveLeft() {
+		boolean moved = false;
+		
 		for (int i = 0; i < grid; ++i) {
 			for (int j = 0; j < grid; ++j) {
 				boolean found = false;
@@ -63,8 +65,9 @@ public class Game {
 				// Check if there are same numbers in the same row
 				// If so, then add them and move the very left
 				for (int k = j + 1; k < grid; ++k) {
-					if (arr[i][j] == arr[i][k]) {
+					if (arr[i][j] != 0 && arr[i][j] == arr[i][k]) {
 						found = true;
+						moved = true;
 						arr[i][j] += arr[i][k];
 						arr[i][k] = 0;
 						
@@ -88,7 +91,8 @@ public class Game {
 				if (!found) {
 					int tempJ = j;
 					
-					while (tempJ > 0 && arr[i][tempJ - 1] == 0) {
+					while (tempJ > 0 && arr[i][tempJ] != 0 && arr[i][tempJ - 1] == 0) {
+						moved = true;
 						arr[i][tempJ - 1] = arr[i][tempJ];
 						arr[i][tempJ] = 0;
 						--tempJ;
@@ -96,16 +100,21 @@ public class Game {
 				}
 			}
 		}
+		
+		return moved;
 	}
 	
-	private void moveRight() {
+	private boolean moveRight() {
+		boolean moved = false;
+		
 		for (int i = 0; i < grid; ++i) {
 			for (int j = grid - 1; j >= 0; --j) {
 				boolean found = false;
 				
 				for (int k = j - 1; k >= 0; --k) {
-					if (arr[i][j] == arr[i][k]) {
+					if (arr[i][j] != 0 && arr[i][j] != 0 && arr[i][j] == arr[i][k]) {
 						found = true;
+						moved = true;
 						arr[i][j] += arr[i][k];
 						arr[i][k] = 0;
 						
@@ -126,7 +135,8 @@ public class Game {
 				if (!found) {
 					int tempJ = j;
 					
-					while (tempJ < grid - 1 && arr[i][tempJ + 1] == 0) {
+					while (tempJ < grid - 1 && arr[i][tempJ] != 0 && arr[i][tempJ + 1] == 0) {
+						moved = true;
 						arr[i][tempJ + 1] = arr[i][tempJ];
 						arr[i][tempJ] = 0;
 						++tempJ;
@@ -134,16 +144,21 @@ public class Game {
 				}
 			}
 		}
+		
+		return moved;
 	}
 	
-	private void moveUp() {
+	private boolean moveUp() {
+		boolean moved = false;
+		
 		for (int j = 0; j < grid; ++j) {
 			for (int i = 0; i < grid; ++i) {
 				boolean found = false;
 				
 				for (int k = i + 1; k < grid; ++k) {
-					if (arr[i][j] == arr[k][j]) {
+					if (arr[i][j] != 0 && arr[i][j] == arr[k][j]) {
 						found = true;
+						moved = true;
 						arr[i][j] += arr[k][j];
 						arr[k][j] = 0;
 						
@@ -164,7 +179,8 @@ public class Game {
 				if (!found) {
 					int tempI = i;
 					
-					while (tempI > 0 && arr[tempI - 1][j] == 0) {
+					while (tempI > 0 && arr[i][tempI] != 0 && arr[tempI - 1][j] == 0) {
+						moved = true;
 						arr[tempI - 1][j] = arr[tempI][j];
 						arr[tempI][j] = 0;
 						--tempI;
@@ -172,16 +188,21 @@ public class Game {
 				}
 			}
 		}
+		
+		return moved;
 	}
 	
-	private void moveDown() {
+	private boolean moveDown() {
+		boolean moved = false;
+		
 		for (int j = 0; j < grid; ++j) {
 			for (int i = grid - 1; i >= 0; --i) {
 				boolean found = false;
 				
 				for (int k = i - 1; k >= 0; --k) {
-					if (arr[i][j] == arr[k][j]) {
+					if (arr[i][j] != 0 && arr[i][j] == arr[k][j]) {
 						found = true;
+						moved = true;
 						arr[i][j] += arr[k][j];
 						arr[k][j] = 0;
 						
@@ -202,7 +223,8 @@ public class Game {
 				if (!found) {
 					int tempI = i;
 					
-					while (tempI < grid - 1 && arr[tempI + 1][j] == 0) {
+					while (tempI < grid - 1 && arr[i][tempI] != 0 && arr[tempI + 1][j] == 0) {
+						moved = true;
 						arr[tempI + 1][j] = arr[tempI][j];
 						arr[tempI][j] = 0;
 						++tempI;
@@ -210,29 +232,39 @@ public class Game {
 				}
 			}
 		}
+		
+		return moved;
 	}
 	
 	private int takeUserAction() {
 		Scanner scanner = new Scanner(new BufferedReader(new InputStreamReader(System.in)));
-		System.out.println("Enter move: ");
-		char move = scanner.next().charAt(0);
+		boolean moved = false;
 		
-		switch (move) {
-			case 'h':
-				moveLeft();
-				System.out.println();
-				break;
-			case 'j':
-				moveUp();
-				break;
-			case 'k':
-				moveDown();
-				break;
-			case 'l':
-				moveRight();
-				break;
-			default:
-				System.out.println("Wrong input");
+		while (!moved) {
+			System.out.println("Enter move: ");
+			char move = scanner.next().charAt(0);
+			
+			switch (move) {
+				case 'h':
+					moved = moveLeft();
+					System.out.println();
+					break;
+				case 'j':
+					moved = moveUp();
+					break;
+				case 'k':
+					moved = moveDown();
+					break;
+				case 'l':
+					moved = moveRight();
+					break;
+				default:
+					System.err.println("WRONG INPUT");
+			}
+			
+			if (!moved) {
+				System.err.println("(NO MOVE PERFORMED!)");
+			}
 		}
 		
 		int max = 0;
