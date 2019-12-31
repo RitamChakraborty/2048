@@ -64,11 +64,13 @@ public class Game {
 			for (int j = 0; j < grid; ++j) {
 				if (arr[i][j] == 0) {
 					return true;
-				} else if (j < grid - 1) {
+				}
+				if (j < grid - 1) {
 					if (arr[i][j] == arr[i][j + 1]) {
 						return true;
 					}
-				} else if (i < grid - 1) {
+				}
+				if (i < grid - 1) {
 					if (arr[i][j] == arr[i + 1][j]) {
 						return true;
 					}
@@ -326,13 +328,6 @@ public class Game {
 				undone = true;
 			} else if (undone) {
 				moved = true;
-			}
-			
-			if (!undone) {
-				System.out.println("(UNDO CAN NOT PERFORMED!)");
-			}
-			if (!moved) {
-				System.out.println("(NO MOVE PERFORMED)");
 			}
 		}
 		
