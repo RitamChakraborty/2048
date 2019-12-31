@@ -329,6 +329,13 @@ public class Game {
 			} else if (undone) {
 				moved = true;
 			}
+			
+			if (!moved) {
+				System.out.println("(NO MOVE TAKEN)");
+			}
+			if (!undone) {
+				System.out.println("(UNDO CAN NOT PERFORMED)");
+			}
 		}
 		
 		int max = 0;
