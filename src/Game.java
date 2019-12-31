@@ -3,11 +3,13 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Stack;
 
 public class Game {
 	private int grid;
 	private int[][] arr;
 	private Canvas canvas;
+	private Stack<int[][]> snapshots;
 	
 	// Position class keeps the position of row and column
 	private static class Position {
@@ -24,6 +26,7 @@ public class Game {
 		this.grid = grid;
 		arr = new int[grid][grid];
 		canvas = new Canvas(grid, arr);
+		snapshots = new Stack<>();
 	}
 	
 	public void play() {
@@ -257,9 +260,38 @@ public class Game {
 		return moved;
 	}
 	
+	private void takeSnapshot() {
+		int[][] snapshot = new int[grid][grid];
+		
+		if (!snapshots.isEmpty()) {
+			snapshots.pop();
+		}
+		
+		for (int i = 0; i < grid; ++i) {
+			System.arraycopy(arr[i], 0, snapshot[i], 0, grid);
+		}
+		
+		snapshots.push(snapshot);
+	}
+	
+	private boolean undo() {
+		if (snapshots.isEmpty()) {
+			return false;
+		}
+		
+		int[][] temp = snapshots.pop();
+		
+		for (int i = 0; i < grid; ++i) {
+			System.arraycopy(temp[i], 0, arr[i], 0, grid);
+		}
+		
+		return true;
+	}
+	
 	private int takeUserAction() {
 		Scanner scanner = new Scanner(new BufferedReader(new InputStreamReader(System.in)));
 		boolean moved = false;
+		boolean undone = false;
 		
 		while (!moved) {
 			System.out.println("Enter move: ");
@@ -267,24 +299,40 @@ public class Game {
 			
 			switch (move) {
 				case 'h':
+					takeSnapshot();
 					moved = moveLeft();
 					System.out.println();
 					break;
 				case 'j':
+					takeSnapshot();
 					moved = moveUp();
 					break;
 				case 'k':
+					takeSnapshot();
 					moved = moveDown();
 					break;
 				case 'l':
+					takeSnapshot();
 					moved = moveRight();
 					break;
+				case 'u':
+					undone = undo();
+					break;
 				default:
-					System.err.println("WRONG INPUT");
+					System.out.println("WRONG INPUT");
 			}
 			
+			if (moved) {
+				undone = true;
+			} else if (undone) {
+				moved = true;
+			}
+			
+			if (!undone) {
+				System.out.println("(UNDO CAN NOT PERFORMED!)");
+			}
 			if (!moved) {
-				System.err.println("(NO MOVE PERFORMED!)");
+				System.out.println("(NO MOVE PERFORMED)");
 			}
 		}
 		
