@@ -29,6 +29,21 @@ public class Game {
 		snapshots = new Stack<>();
 	}
 	
+	// Get the positions where you can place new number
+	private List<Position> getEmptyPositions() {
+		List<Position> positions = new ArrayList<>();
+		
+		for (int i = 0; i < arr.length; ++i) {
+			for (int j = 0; j < arr[i].length; ++j) {
+				if (arr[i][j] == 0) {
+					positions.add(new Position(i, j));
+				}
+			}
+		}
+		
+		return positions;
+	}
+	
 	public void play() {
 		int max = 0;
 		
@@ -346,20 +361,5 @@ public class Game {
 		}
 		
 		return max;
-	}
-	
-	// Get the positions where you can place new number
-	private List<Position> getEmptyPositions() {
-		List<Position> positions = new ArrayList<>();
-		
-		for (int i = 0; i < arr.length; ++i) {
-			for (int j = 0; j < arr[i].length; ++j) {
-				if (arr[i][j] == 0) {
-					positions.add(new Position(i, j));
-				}
-			}
-		}
-		
-		return positions;
 	}
 }
