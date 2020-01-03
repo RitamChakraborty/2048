@@ -71,22 +71,35 @@ public class Game {
 	}
 	
 	/**
+	 * Place new numbers in empty positions
+	 */
+	private void placeNewNumbers() {
+		List<Position> emptyPositions = getEmptyPositions();
+		int length = emptyPositions.size();
+		
+		int random = (int) Math.round(Math.random() * (length - 1));        // Selects a random number in between the size of empty positions
+		Position randomPosition = emptyPositions.get(random);               // Selects a random position where to put the next element
+		
+		int num = (int) Math.round(Math.random() * 1) == 0                  // Selects either 2 or 4 to put in the selected position
+				          ? 2
+				          : 4;
+		arr[randomPosition.i][randomPosition.j] = num;
+	}
+	
+	/**
 	 * Game begins here
 	 */
 	public void play() {
 		int max = 0;
+		int iteration = 0;
 		
 		while (max != 2048) {                                                   // Play the game until the max sum reaches 2048
-			List<Position> emptyPositions = getEmptyPositions();
-			int length = emptyPositions.size();
-			
-			int random = (int) Math.round(Math.random() * (length - 1));        // Selects a random number in between the size of empty positions
-			Position randomPosition = emptyPositions.get(random);               // Selects a random position where to put the next element
-			
-			int num = (int) Math.round(Math.random() * 1) == 0                  // Selects either 2 or 4 to put in the selected position
-					          ? 2
-					          : 4;
-			arr[randomPosition.i][randomPosition.j] = num;
+			if (iteration == 0) {
+				placeNewNumbers();
+				placeNewNumbers();
+			} else {
+				placeNewNumbers();
+			}
 			canvas.draw();                                                      // Draw the board after every iteration
 			
 			if (!anyMoveLeft()) {                                               // Print game over if there is no move left
@@ -95,9 +108,11 @@ public class Game {
 			}
 			
 			max = takeUserAction();                                             // Takes user move
+			++iteration;
 			
 			if (max == 2048) {                                                  // If max sum reaches 2048, print win
 				System.out.println("You've won!");
+				System.out.println("Number of moves: " + iteration);
 			}
 		}
 	}
@@ -341,6 +356,7 @@ public class Game {
 	
 	/**
 	 * Take user input
+	 *
 	 * @return max sum in the board
 	 */
 	private int takeUserAction() {
