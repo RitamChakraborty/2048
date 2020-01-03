@@ -1,15 +1,24 @@
 import java.util.StringJoiner;
 
+/**
+ * Use to draw the board
+ */
 public class Canvas {
 	private int grid;
 	private int[][] arr;
 	
+	/**
+	 * @param grid size of the board
+	 * @param arr  position of all the numbers in the board
+	 */
 	public Canvas(int grid, int[][] arr) {
 		this.grid = grid;
 		this.arr = arr;
 	}
 	
-	// Draw the board
+	/**
+	 * Draw the board
+	 */
 	public void draw() {
 		CharSequence separator = "\n";
 		StringJoiner stringJoiner = new StringJoiner(separator);
