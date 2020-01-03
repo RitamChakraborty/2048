@@ -125,7 +125,7 @@ public class Game {
 						
 						int tempJ = j;
 						
-						// Logic of moving the number to the very left
+						// Move the numbers to the very left
 						while (tempJ > 0 && arr[i][tempJ - 1] == 0) {
 							arr[i][tempJ - 1] = arr[i][tempJ];
 							arr[i][tempJ] = 0;
@@ -341,17 +341,18 @@ public class Game {
 	
 	/**
 	 * Take user input
-	 *
 	 * @return max sum in the board
 	 */
 	private int takeUserAction() {
 		Scanner scanner = new Scanner(new BufferedReader(new InputStreamReader(System.in)));
 		boolean moved = false;
 		boolean undone = false;
+		boolean undoIsPerformed = false;
 		
 		while (!moved) {
+			System.out.println("(h: left, l: right, j: up, k: down, u: undo)");
 			System.out.println("Enter move: ");
-			char move = scanner.next().charAt(0);
+			char move = scanner.next().toLowerCase().charAt(0);
 			
 			switch (move) {
 				case 'h':
@@ -373,22 +374,22 @@ public class Game {
 					break;
 				case 'u':
 					undone = undo();
+					undoIsPerformed = true;
 					break;
 				default:
 					System.out.println("WRONG INPUT");
 			}
 			
-			if (moved) {
-				undone = true;
-			} else if (undone) {
-				moved = true;
-			}
-			
-			if (!moved) {
-				System.out.println("(NO MOVE TAKEN)");
-			}
-			if (!undone) {
-				System.out.println("(UNDO CAN NOT PERFORMED)");
+			if (undoIsPerformed) {
+				if (!undone) {
+					System.out.println("(UNDO CAN NOT BE PERFORMED!)");
+				} else {
+					moved = true;
+				}
+			} else {
+				if (!moved) {
+					System.out.println("(NO MOVE TAKEN!)");
+				}
 			}
 		}
 		
