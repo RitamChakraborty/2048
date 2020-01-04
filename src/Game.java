@@ -1,9 +1,6 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Contains the logic for the game
@@ -12,7 +9,10 @@ public class Game {
 	private int grid;
 	private int[][] arr;
 	private Canvas canvas;
-	private Stack<int[][]> snapshots;
+	private Movement movement;
+	private Deque<int[][]> snapshots;
+	private int iteration = 0;
+	
 	
 	/**
 	 * @param grid size of the board
@@ -21,7 +21,8 @@ public class Game {
 		this.grid = grid;
 		arr = new int[grid][grid];
 		canvas = new Canvas(grid, arr);
-		snapshots = new Stack<>();
+		movement = new Movement(grid, arr);
+		snapshots = new ArrayDeque<>();
 	}
 	
 	/**
@@ -43,32 +44,6 @@ public class Game {
 		return positions;
 	}
 	
-	/**
-	 * Checks if there is any move left to be performed
-	 *
-	 * @return true if there is some move possible, false otherwise
-	 */
-	private boolean anyMoveLeft() {
-		for (int i = 0; i < grid; ++i) {
-			for (int j = 0; j < grid; ++j) {
-				if (arr[i][j] == 0) {
-					return true;
-				}
-				if (j < grid - 1) {
-					if (arr[i][j] == arr[i][j + 1]) {
-						return true;
-					}
-				}
-				if (i < grid - 1) {
-					if (arr[i][j] == arr[i + 1][j]) {
-						return true;
-					}
-				}
-			}
-		}
-		
-		return false;
-	}
 	
 	/**
 	 * Place new numbers in empty positions
@@ -91,23 +66,24 @@ public class Game {
 	 */
 	public void play() {
 		int max = 0;
-		int iteration = 0;
 		
 		while (max != 2048) {                                                   // Play the game until the max sum reaches 2048
+			placeNewNumbers();
+			
 			if (iteration == 0) {
 				placeNewNumbers();
-				placeNewNumbers();
-			} else {
-				placeNewNumbers();
 			}
+			
+			takeSnapshot();
 			canvas.draw();                                                      // Draw the board after every iteration
 			
-			if (!anyMoveLeft()) {                                               // Print game over if there is no move left
+			if (!movement.anyMoveLeft()) {                                               // Print game over if there is no move left
 				System.out.println("GAME OVER!");
 				break;
 			}
 			
-			max = takeUserAction();                                             // Takes user move
+			takeUserAction();                                             // Takes user move
+			max = getMaxValue();
 			++iteration;
 			
 			if (max == 2048) {                                                  // If max sum reaches 2048, print win
@@ -118,221 +94,16 @@ public class Game {
 	}
 	
 	/**
-	 * Move left is performed in the board
-	 *
-	 * @return true if some move is done, false otherwise
-	 */
-	private boolean moveLeft() {
-		boolean moved = false;
-		
-		for (int i = 0; i < grid; ++i) {
-			for (int j = 0; j < grid; ++j) {
-				boolean found = false;
-				
-				// Check if there are same numbers in the same row
-				// If so, then add them and move the very left
-				for (int k = j + 1; k < grid; ++k) {
-					if (arr[i][j] != 0 && arr[i][j] == arr[i][k]) {
-						found = true;
-						moved = true;
-						arr[i][j] += arr[i][k];
-						arr[i][k] = 0;
-						
-						int tempJ = j;
-						
-						// Move the numbers to the very left
-						while (tempJ > 0 && arr[i][tempJ - 1] == 0) {
-							arr[i][tempJ - 1] = arr[i][tempJ];
-							arr[i][tempJ] = 0;
-							--tempJ;
-						}
-						
-						break;
-					} else if (arr[i][k] != 0) {
-						break;
-					}
-				}
-				
-				// If no consecutive same number found,
-				// then just move the number to the left
-				if (!found) {
-					int tempJ = j;
-					
-					while (tempJ > 0 && arr[i][tempJ] != 0 && arr[i][tempJ - 1] == 0) {
-						moved = true;
-						arr[i][tempJ - 1] = arr[i][tempJ];
-						arr[i][tempJ] = 0;
-						--tempJ;
-					}
-				}
-			}
-		}
-		
-		return moved;
-	}
-	
-	/**
-	 * Move right is performed in the board
-	 *
-	 * @return true is some move is performed, false otherwise
-	 */
-	private boolean moveRight() {
-		boolean moved = false;
-		
-		for (int i = 0; i < grid; ++i) {
-			for (int j = grid - 1; j >= 0; --j) {
-				boolean found = false;
-				
-				for (int k = j - 1; k >= 0; --k) {
-					if (arr[i][j] != 0 && arr[i][j] != 0 && arr[i][j] == arr[i][k]) {
-						found = true;
-						moved = true;
-						arr[i][j] += arr[i][k];
-						arr[i][k] = 0;
-						
-						int tempJ = j;
-						
-						while (tempJ < grid - 1 && arr[i][tempJ + 1] == 0) {
-							arr[i][tempJ + 1] = arr[i][tempJ];
-							arr[i][tempJ] = 0;
-							++tempJ;
-						}
-						
-						break;
-					} else if (arr[i][k] != 0) {
-						break;
-					}
-				}
-				
-				if (!found) {
-					int tempJ = j;
-					
-					while (tempJ < grid - 1 && arr[i][tempJ] != 0 && arr[i][tempJ + 1] == 0) {
-						moved = true;
-						arr[i][tempJ + 1] = arr[i][tempJ];
-						arr[i][tempJ] = 0;
-						++tempJ;
-					}
-				}
-			}
-		}
-		
-		return moved;
-	}
-	
-	/**
-	 * Move up is performed in the board
-	 *
-	 * @return true if some move is performed, false otherwise
-	 */
-	private boolean moveUp() {
-		boolean moved = false;
-		
-		for (int j = 0; j < grid; ++j) {
-			for (int i = 0; i < grid; ++i) {
-				boolean found = false;
-				
-				for (int k = i + 1; k < grid; ++k) {
-					if (arr[i][j] != 0 && arr[i][j] == arr[k][j]) {
-						found = true;
-						moved = true;
-						arr[i][j] += arr[k][j];
-						arr[k][j] = 0;
-						
-						int tempI = i;
-						
-						while (tempI > 0 && arr[tempI - 1][j] == 0) {
-							arr[tempI - 1][j] = arr[tempI][j];
-							arr[tempI][j] = 0;
-							--tempI;
-						}
-						
-						break;
-					} else if (arr[k][j] != 0) {
-						break;
-					}
-				}
-				
-				if (!found) {
-					int tempI = i;
-					
-					while (tempI > 0 && arr[tempI][j] != 0 && arr[tempI - 1][j] == 0) {
-						moved = true;
-						arr[tempI - 1][j] = arr[tempI][j];
-						arr[tempI][j] = 0;
-						--tempI;
-					}
-				}
-			}
-		}
-		
-		return moved;
-	}
-	
-	/**
-	 * Move down is performed in the board
-	 *
-	 * @return true if some move is performed, false otherwise
-	 */
-	private boolean moveDown() {
-		boolean moved = false;
-		
-		for (int j = 0; j < grid; ++j) {
-			for (int i = grid - 1; i >= 0; --i) {
-				boolean found = false;
-				
-				for (int k = i - 1; k >= 0; --k) {
-					if (arr[i][j] != 0 && arr[i][j] == arr[k][j]) {
-						found = true;
-						moved = true;
-						arr[i][j] += arr[k][j];
-						arr[k][j] = 0;
-						
-						int tempI = i;
-						
-						while (tempI < grid - 1 && arr[tempI + 1][j] == 0) {
-							arr[tempI + 1][j] = arr[tempI][j];
-							arr[tempI][j] = 0;
-							++tempI;
-						}
-						
-						break;
-					} else if (arr[k][j] != 0) {
-						break;
-					}
-				}
-				
-				if (!found) {
-					int tempI = i;
-					
-					while (tempI < grid - 1 && arr[tempI][j] != 0 && arr[tempI + 1][j] == 0) {
-						moved = true;
-						arr[tempI + 1][j] = arr[tempI][j];
-						arr[tempI][j] = 0;
-						++tempI;
-					}
-				}
-			}
-		}
-		
-		return moved;
-	}
-	
-	/**
 	 * Save the previous board positions in the stack
 	 */
 	private void takeSnapshot() {
 		int[][] snapshot = new int[grid][grid];
 		
-		if (!snapshots.isEmpty()) {
-			snapshots.pop();
-		}
-		
 		for (int i = 0; i < grid; ++i) {
 			System.arraycopy(arr[i], 0, snapshot[i], 0, grid);
 		}
 		
-		snapshots.push(snapshot);
+		snapshots.add(snapshot);
 	}
 	
 	/**
@@ -341,11 +112,15 @@ public class Game {
 	 * @return true if undo can be performed, false otherwise
 	 */
 	private boolean undo() {
-		if (snapshots.isEmpty()) {
+		if (iteration == 0) {
 			return false;
 		}
 		
-		int[][] temp = snapshots.pop();
+		if (snapshots.size() < 2) {
+			return false;
+		}
+		
+		int[][] temp = snapshots.peek();
 		
 		for (int i = 0; i < grid; ++i) {
 			System.arraycopy(temp[i], 0, arr[i], 0, grid);
@@ -355,38 +130,47 @@ public class Game {
 	}
 	
 	/**
-	 * Take user input
+	 * Get the maximum value of the sums
 	 *
-	 * @return max sum in the board
+	 * @return Maximum sum
 	 */
-	private int takeUserAction() {
+	private int getMaxValue() {
+		int max = 0;
+		for (int[] ints : arr) {
+			for (int anInt : ints) {
+				max = Integer.max(max, anInt);
+			}
+		}
+		
+		return max;
+	}
+	
+	/**
+	 * Takes user input
+	 */
+	private void takeUserAction() {
 		Scanner scanner = new Scanner(new BufferedReader(new InputStreamReader(System.in)));
 		boolean moved = false;
 		boolean undone = false;
-		boolean undoIsPerformed = false;
 		
 		while (!moved) {
+			boolean undoIsPerformed = false;
 			System.out.println("(h: left, l: right, j: up, k: down, u: undo)");
 			System.out.println("Enter move: ");
 			char move = scanner.next().toLowerCase().charAt(0);
 			
 			switch (move) {
 				case 'h':
-					takeSnapshot();
-					moved = moveLeft();
-					System.out.println();
+					moved = movement.moveLeft();
 					break;
 				case 'j':
-					takeSnapshot();
-					moved = moveUp();
+					moved = movement.moveUp();
 					break;
 				case 'k':
-					takeSnapshot();
-					moved = moveDown();
+					moved = movement.moveDown();
 					break;
 				case 'l':
-					takeSnapshot();
-					moved = moveRight();
+					moved = movement.moveRight();
 					break;
 				case 'u':
 					undone = undo();
@@ -400,23 +184,20 @@ public class Game {
 				if (!undone) {
 					System.out.println("(UNDO CAN NOT BE PERFORMED!)");
 				} else {
-					moved = true;
+					if (snapshots.size() > 1) {
+						snapshots.removeLast();
+					}
+					canvas.draw();
 				}
+			}
+			if (!undoIsPerformed && !moved) {
+				System.out.println("(NO MOVE TAKEN!)");
 			} else {
-				if (!moved) {
-					System.out.println("(NO MOVE TAKEN!)");
+				if (snapshots.size() >= 2) {
+					snapshots.removeFirst();
 				}
 			}
 		}
-		
-		int max = 0;
-		for (int[] ints : arr) {
-			for (int anInt : ints) {
-				max = Integer.max(max, anInt);
-			}
-		}
-		
-		return max;
 	}
 	
 	/**
