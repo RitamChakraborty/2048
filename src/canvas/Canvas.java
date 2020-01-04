@@ -1,3 +1,5 @@
+package canvas;
+
 import java.util.StringJoiner;
 
 /**

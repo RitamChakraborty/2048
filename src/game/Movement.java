@@ -1,3 +1,5 @@
+package game;
+
 /**
  * Provide movements
  */
@@ -16,7 +18,7 @@ public class Movement {
 	 *
 	 * @return true if some move is done, false otherwise
 	 */
-	public boolean moveLeft() {
+	boolean moveLeft() {
 		boolean moved = false;
 		
 		for (int i = 0; i < grid; ++i) {
@@ -70,7 +72,7 @@ public class Movement {
 	 *
 	 * @return true is some move is performed, false otherwise
 	 */
-	public boolean moveRight() {
+	boolean moveRight() {
 		boolean moved = false;
 		
 		for (int i = 0; i < grid; ++i) {
@@ -119,7 +121,7 @@ public class Movement {
 	 *
 	 * @return true if some move is performed, false otherwise
 	 */
-	public boolean moveUp() {
+	boolean moveUp() {
 		boolean moved = false;
 		
 		for (int j = 0; j < grid; ++j) {
@@ -168,7 +170,7 @@ public class Movement {
 	 *
 	 * @return true if some move is performed, false otherwise
 	 */
-	public boolean moveDown() {
+	boolean moveDown() {
 		boolean moved = false;
 		
 		for (int j = 0; j < grid; ++j) {
@@ -217,7 +219,7 @@ public class Movement {
 	 *
 	 * @return true if there is some move possible, false otherwise
 	 */
-	public boolean anyMoveLeft() {
+	boolean anyMoveLeft() {
 		for (int i = 0; i < grid; ++i) {
 			for (int j = 0; j < grid; ++j) {
 				if (arr[i][j] == 0) {

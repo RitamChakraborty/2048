@@ -1,3 +1,7 @@
+package game;
+
+import canvas.Canvas;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.*;
@@ -8,7 +12,7 @@ import java.util.*;
 public class Game {
 	private int grid;
 	private int[][] arr;
-	private Canvas canvas;
+	private canvas.Canvas canvas;
 	private Movement movement;
 	private Deque<int[][]> snapshots;
 	private int iteration = 0;
@@ -62,7 +66,7 @@ public class Game {
 	}
 	
 	/**
-	 * Game begins here
+	 * game.Game begins here
 	 */
 	public void play() {
 		int max = 0;
