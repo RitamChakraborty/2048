@@ -51,6 +51,6 @@ public class Canvas {
 			}
 		}
 		
-		System.out.println(stringJoiner.toString());
+		System.out.println("\n" + stringJoiner.toString() + "\n");
 	}
 }
